@@ -17,3 +17,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Style for the autocomplete container */
+.pac-container {
+  background-color: white;  /* Change the background color */
+  border: 1px solid #ccc;   /* Add a border */
+  z-index: 1000;            /* Increase z-index to appear above other elements */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Add a subtle shadow */
+}
+
+/* Style for individual autocomplete items */
+.pac-item {
+  font-size: 15px;          /* Change font size */
+  padding: 10px;            /* Add padding */
+  cursor: pointer;          /* Change cursor to pointer */
+}
+
+.pac-item-query {
+  font-size: 15px;
+}
+
+/* Style for highlighted autocomplete item */
+.pac-item:hover, .pac-item-selected {
+  background-color: #f0f0f0;  /* Highlight background on hover */
+}
+
+/* Style for the main query in autocomplete */
+.pac-item-query {
+  font-weight: bold;         /* Make the main query bold */
+}
