@@ -1,6 +1,5 @@
 import React from 'react';
 import { ReactComponent as TomatoSvg } from './logo.svg';
-import SearchBar from './components/SearchBar';
 import UserProfile from './components/UserProfile';
 import RestaurantsTable from './components/RestaurantsTable';
 
@@ -16,9 +15,8 @@ const RestaurantRatingApp = () => {
         <UserProfile/>
       </div>
       <div className="relative w-full py-4 max-w-4xl mx-auto">
-        <h1 className="text-3xl px-2 font-bold" style={{fontFamily:"italiana"}}>Add a restaurant visit to your list:</h1>
+        <h1 className="text-3xl px-2 font-bold" style={{fontFamily:"italiana"}}>Add a restaurant visit to your list</h1>
       </div>
-      <SearchBar />
       <RestaurantsTable />
     </div>
   );
