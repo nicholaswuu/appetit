@@ -23,7 +23,7 @@ const RestaurantsTable = () => {
             if (user) {
                 const token = await user.getIdToken();
                 try {
-                    const response = await fetch('http://localhost:5001/api/visits', {
+                    const response = await fetch('https://appetit-d10d8fac3d83.herokuapp.com', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
         
@@ -67,7 +67,7 @@ const RestaurantsTable = () => {
         if (user) {
             const token = await user.getIdToken();
             try {
-                const response = await fetch(`http://localhost:5001/api/visits/row/${id}`, {
+                const response = await fetch(`https://appetit-d10d8fac3d83.herokuapp.com/api/visits/row/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -99,7 +99,7 @@ const RestaurantsTable = () => {
         if (user) {
             const token = await user.getIdToken();
             try {
-                await fetch('http://localhost:5001/api/visits/row', {
+                await fetch('https://appetit-d10d8fac3d83.herokuapp.com/api/visits/row', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
