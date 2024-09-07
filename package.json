@@ -1,0 +1,16 @@
+{
+    "name": "appetit",
+    "version": "1.0.0",
+    "engines": {
+      "node": "14.x"
+    },
+    "scripts": {
+      "start": "node server/server.js",
+      "heroku-postbuild": "cd client && npm install && npm run build"
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "mongoose": "^6.0.5"
+    }
+  }
+  

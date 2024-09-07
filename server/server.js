@@ -2,13 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const admin = require('./firebaseAdmin');
 const path = require('path');
+const admin = require('./firebaseAdmin');
 
 const app = express();
 app.use(express.json());
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://appetit-d10d8fac3d83.herokuapp.com/'],
+}));
 
 const verifyFirebaseToken = async (req, res, next) => {
   const idToken = req.headers.authorization?.split(' ')[1];
