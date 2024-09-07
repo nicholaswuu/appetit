@@ -23,7 +23,7 @@ const RestaurantsTable = () => {
             if (user) {
                 const token = await user.getIdToken();
                 try {
-                    const response = await fetch('https://appetit-d10d8fac3d83.herokuapp.com', {
+                    const response = await fetch('https://appetit-d10d8fac3d83.herokuapp.com/api/visits', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
         
