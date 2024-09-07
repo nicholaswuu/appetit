@@ -1,41 +1,58 @@
 import * as React from 'react';
-import { Box, Rating, TextField, InputAdornment } from '@mui/material';
+import { Box, InputAdornment, Rating, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { 
+import {
     GridRowModes,
     DataGrid,
     GridActionsCellItem,
-    GridRowEditStopReasons, 
+    GridRowEditStopReasons,
 } from '@mui/x-data-grid';
+import { useAuth } from '../AuthContext';
 import SearchBar from './SearchBar';
 
-const initialRows = [
-    { id: 1, cuisine: 'Italian', restaurant: 'Snow', order: 'Pasta', price: 35, rating: 1, },
-    { id: 2, cuisine: 'French', restaurant: 'Lannister', order: 'Escargot', price: 42, rating: 2 },
-    { id: 3, cuisine: 'Middle Eastern', restaurant: 'Lannister', order: 'Hummus', price: 45, rating: 3 },
-    { id: 4, cuisine: 'Japanese', restaurant: 'Stark', order: 'Sushi', price: 16, rating: 10 },
-    { id: 5, cuisine: 'Egyptian', restaurant: 'Targaryen', order: 'Lamb', price: 20, rating: 6 },
-    { id: 6, cuisine: 'Peruvian', restaurant: 'Melisandre', order: 'Ceviche', price: 150, rating: 9 },
-    { id: 7, cuisine: 'Fast Food', restaurant: 'Clifford', order: 'Burger', price: 44, rating: 4 },
-    { id: 8, cuisine: 'Chinese', restaurant: 'Frances', order: 'Dim Sum', price: 36, rating: 8 },
-    { id: 9, cuisine: 'Thai', restaurant: 'Roxie', order: 'Pad Thai', price: 65, rating: 9 },
-];
-
-export default function RestaurantsTable() {
-    const [rows, setRows] = React.useState(initialRows);
+const RestaurantsTable = () => {
+    const { user } = useAuth();
+    const [rows, setRows] = React.useState([]);
     const [rowModesModel, setRowModesModel] = React.useState({});
 
+    React.useEffect(() => {
+        const fetchRows = async () => {
+            if (user) {
+                const token = await user.getIdToken();
+                try {
+                    const response = await fetch('http://localhost:5001/api/visits', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+        
+                    if (!response.ok) { 
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+        
+                    const data = await response.json();
+                    setRows(data);
+                } catch (error) {
+                    console.error('Error fetching rows:', error);
+                }
+            }
+        };
+
+        fetchRows();
+    }, [user]);
+
     const handleRowEditStop = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-        event.defaultMuiPrevented = true;
-    }
+        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+            event.defaultMuiPrevented = true;
+        }
     };
 
     const handleEditClick = (id) => () => {
-        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+        setRowModesModel((prevModel) => ({
+            ...prevModel,
+            [id]: { mode: GridRowModes.Edit },
+        }));
     };
 
     const handleSaveClick = (id) => () => {
@@ -45,27 +62,56 @@ export default function RestaurantsTable() {
         }));
     };
 
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
+    const handleDeleteClick = (id) => async () => {
+        setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+        if (user) {
+            const token = await user.getIdToken();
+            try {
+                const response = await fetch(`http://localhost:5001/api/visits/row/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error deleting row:', error);
+            }
+        }
     };
-
+    
+    
     const handleCancelClick = (id) => () => {
         setRowModesModel({
             ...rowModesModel,
             [id]: { mode: GridRowModes.View, ignoreModifications: true },
         });
-
-        const editedRow = rows.find((row) => row.id === id);
-        if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-        }
     };
 
-    const processRowUpdate = (newRow) => {
+    const processRowUpdate = async (newRow) => {
         const updatedRow = { ...newRow, isNew: false };
         setRows((prevRows) =>
             prevRows.map((row) => (row.id === newRow.id ? updatedRow : row))
         );
+
+        if (user) {
+            const token = await user.getIdToken();
+            try {
+                await fetch('http://localhost:5001/api/visits/row', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ row: updatedRow }),
+                });
+            } catch (error) {
+                console.error('Error saving row:', error);
+            }
+        }
+
         return updatedRow;
     };
 
@@ -120,7 +166,7 @@ export default function RestaurantsTable() {
             headerName: 'Rating',
             editable: true,
             renderCell: (params) => {
-                return <Rating name="hover-feedback" value={params.value} precision={0.5} />;
+                return <Rating name="hover-feedback" value={params.value} precision={0.5} readOnly />;
             },
             renderEditCell: (params) => (
                 <Rating
@@ -263,3 +309,5 @@ export default function RestaurantsTable() {
         </Box>
     );
 }
+
+export default RestaurantsTable;
