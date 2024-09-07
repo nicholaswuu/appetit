@@ -1,4 +1,3 @@
-// SearchBar.js
 import React, { useState, useRef } from 'react';
 import { Box, InputAdornment, Paper, IconButton, FormControl, InputLabel, OutlinedInput } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
