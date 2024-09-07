@@ -32,6 +32,7 @@ const RestaurantsTable = () => {
                     }
         
                     const data = await response.json();
+                    data.sort((a, b) => b.id - a.id);
                     setRows(data);
                 } catch (error) {
                     console.error('Error fetching rows:', error);
@@ -92,9 +93,11 @@ const RestaurantsTable = () => {
 
     const processRowUpdate = async (newRow) => {
         const updatedRow = { ...newRow, isNew: false };
-        setRows((prevRows) =>
-            prevRows.map((row) => (row.id === newRow.id ? updatedRow : row))
-        );
+        setRows((prevRows) => {
+            const updatedRows = prevRows.map((row) => (row.id === newRow.id ? updatedRow : row));
+            updatedRows.sort((a, b) => b.id - a.id);
+            return updatedRows;
+        });
 
         if (user) {
             const token = await user.getIdToken();
